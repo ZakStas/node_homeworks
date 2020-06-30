@@ -1,0 +1,28 @@
+{
+  "name": "node-homeworks",
+  "version": "1.0.0",
+  "description": "node",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZakStas/node-homeworks.git"
+  },
+  "author": "Stanislav Zakarliuka <stanislavzakarliuka1989@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZakStas/node-homeworks/issues"
+  },
+  "homepage": "https://github.com/ZakStas/node-homeworks#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "shortid": "^2.2.15",
+    "yargs": "^15.3.1"
+  }
+}
