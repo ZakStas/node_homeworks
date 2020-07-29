@@ -10,7 +10,4 @@ authRouter.post("/login", validateUser, tokenValidate)
 authRouter.post('/logout',  validateUser, logOut)
 authRouter.get('/users/current', validateUser, getCurrentUser)
 
-
-
-
 module.exports = authRouter;
