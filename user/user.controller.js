@@ -23,13 +23,11 @@ const userRegister = async(req, res) => {
   const dbUser = await userToAdd.save();
   
 
-  res.status(201).send(
-  {
+  res.status(201).send({
     id: dbUser._id,
     email: dbUser.email,
     subscription: dbUser.subscription,
-  }
-);
+ });
 }
 catch (err) {console.log(err)};
 }
@@ -46,12 +44,12 @@ const userLogin = async(req, res) => {
   if(!compareUser){res.status(401).send("Email or password is wrong");}
     const tokenUser = jwt.sign({id:userDb._id}, process.env.JWT_SECRET)
     await userModel.findOneAndUpdate({_id: userDb._id}, {token:tokenUser}, {new:true})
-    res.status(200).send(
-      {token: tokenUser,
+    res.status(200).send({
+      token: tokenUser,
       user: {
-        email:userDb.email,
-        subscription: userDb.subscription}
-  })
+      email:userDb.email,
+      subscription: userDb.subscription}
+  });
 }
 catch (err) {
   }
