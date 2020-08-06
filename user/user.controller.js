@@ -16,10 +16,9 @@ const userRegister = async(req, res) => {
   
   try {const {password, email} = req.body;
   
-  const existUser = await userModel.findOne({email}); //не ставить пробел между названием функции и аргументами
+  const existUser = await userModel.findOne({email});
   
   if(existUser) {
-  
     res.status(409).send('Email in use');
   }
 

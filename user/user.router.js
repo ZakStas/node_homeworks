@@ -16,8 +16,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-authRouter.post("/register", validateUser, userRegister) //token is not
-authRouter.post("/login", validateUser, userLogin) //token
+authRouter.post("/register", validateUser, userRegister) 
+authRouter.post("/login", validateUser, userLogin) 
  
 authRouter.post('/logout', tokenValidate, logOut)
 authRouter.get('/users/current', tokenValidate, getCurrentUser)
@@ -27,9 +27,6 @@ tokenValidate,
   upload.single('avatar'),
   updateAvatar,
 );
-
-
-
 
 
 module.exports = authRouter;
