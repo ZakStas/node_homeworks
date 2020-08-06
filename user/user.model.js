@@ -1,25 +1,19 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const {ObjectId} = mongoose.Types;
+const mongoose = require('mongoose');
+const { Schema } = require('mongoose');
 
-const usersSchema = new Schema ({ 
-  email: {
-    type: String,
-    required: true,
-    validate: (value) => value.includes('@'),
-    unique: true,
-  },
-  password: {
-   type: String,
-   required: true
-},
+const schema = new Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  avatarURL: { type: String },
   subscription: {
-   type: String,
-   enum: ["free", "pro", "premium"],
-   default: "free"
-},
-token: String
+    type: String,
+    enum: ['free', 'pro', 'premium'],
+    default: 'free',
+  },
+  token: { type: String },
+  verificationToken: { type: String },
 });
 
-const userModel = mongoose.model("Auth", usersSchema);
-module.exports = userModel;
+const model = mongoose.model('User', schema);
+
+module.exports = model;
