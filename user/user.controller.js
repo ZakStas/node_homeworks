@@ -4,10 +4,8 @@ const jwt = require("jsonwebtoken");
 const path = require('path');
 const Avatar = require('avatar-builder');
 const fs = require('fs');
-// const fsPromise = fs.promises;
-// const imagemin = require('imagemin');
-// const imageminJpegtran = require('imagemin-jpegtran');
-// const imageminPngquant = require('imagemin-pngquant');
+const fsPromise = fs.promises;
+
 
 const getUsers = async(req, res) => {
   const usersList = await userModel.find();
@@ -18,41 +16,15 @@ const userRegister = async(req, res) => {
   
   try {const {password, email} = req.body;
   
-  const existUser = await userModel.findOne ({email});
+  const existUser = await userModel.findOne({email}); //не ставить пробел между названием функции и аргументами
   
   if(existUser) {
   
     res.status(409).send('Email in use');
   }
 
-  const createUser = (req, res, next) => {
-    try {
-      const { password, email, subscription } = req.body;
-      const passwordHash = await bcryptjs.hash(password, 8);
 
-      const existingUser = await userModel.findUserByEmail(email);
-      if (existingUser) {
-        return res.status(401).json({ message: 'Not authorized' });
-      }
-
-      const user = await userModel.create({
-        email,
-        password: passwordHash,
-        subscription,
-        avatarURL: avatarURL,
-      });
-      return res.status(201).json({
-        email: user.email,
-        subscription: user.subscription,
-        avatarURL: user.avatarURL,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-
-  const avatar = Avatar.builder(
+    const avatar = Avatar.builder(
     Avatar.Image.margin(Avatar.Image.circleMask(Avatar.Image.identicon())),
     128,
     128,
@@ -63,9 +35,12 @@ const userRegister = async(req, res) => {
   const avatarBaseUrl = `${process.env.STATIC_BASE_URL}/${Date.now()}.png`;
   const newAvatar = avatar.create('gabriel').then(buffer => {
   fs.writeFileSync(`./${avatarBasePath}`, buffer);
-  fs.rename(`./${avatarBasePath}`, `./public/${avatarBaseUrl}`, (err) => {
+  fs.writeFileSync(`./public/${avatarBaseUrl}`, buffer, (err) => {
         if (err) throw err;
-         console.log('Rename complete!');
+          fs.unlink(`./${avatarBasePath}`, (err) => {
+          if (err) throw err;
+          console.log(`./${avatarBasePath} was deleted`);
+        });
        });
   });
  const avatarURL = `${process.env.SERVER_BASE_URL}/${avatarBaseUrl}`;
@@ -73,15 +48,18 @@ const userRegister = async(req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   
-  const userToAdd = new userModel ({email, password: passwordHash});
-  const dbUser = await userToAdd.save();
   
+  const dbUser = await userModel.create({
+    email,
+    password: passwordHash,
+    avatarURL: avatarURL,
+  });
 
   res.status(201).send({
     id: dbUser._id,
     email: dbUser.email,
     subscription: dbUser.subscription,
-    avatarURL: dbUser.avatarURL,
+    avatarURL: dbUser.avatarURL, 
  });
 }
 catch (err) {console.log(err)};
@@ -179,20 +157,23 @@ const updateSubscription = async (req, res, next) => {
 
 const  updateAvatar = async (req, res, next) => {
   try {
-    await this.minifyImage(req.file.path);
+    const user = await userModel.findById(req.id);
+    const { avatarURL } = user;
+    const avatarFileName = path.basename(avatarURL);
+    const newAvatar = req.file.buffer;
+    const avatarPath = path.join(
+      __dirname,
+      `../public/images/${avatarFileName}`
+    );
+    await fsPromises.writeFile(avatarPath, newAvatar);
+    return res.status(200).json({
+      avatarURL: avatarURL,
+    });
 
-    const path = `http://localhost:${process.env.PORT}/images/${req.file.filename}`;
-
-    await user.findByIdAndUpdate(req.id, { $set: { avatarURL: path } });
-
-    res.status(200).send({ avatarURL: path });
   } catch (err) {
     next(err);
   }
 };
-
-
-
 
 module.exports = {
   userRegister, 
@@ -202,7 +183,6 @@ module.exports = {
   logOut, 
   getCurrentUser, 
   updateSubscription, 
-  createUser,
   updateAvatar
   }
 
