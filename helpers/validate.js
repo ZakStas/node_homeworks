@@ -1,7 +1,5 @@
 const Joi = require('@hapi/joi');
 
-
-
 function validateCreateContact(req, res, next) {
 	const contactSchema = Joi.object({
 		name: Joi.string().required(),
