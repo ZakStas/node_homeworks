@@ -5,6 +5,8 @@ const path = require('path');
 const Avatar = require('avatar-builder');
 const fs = require('fs');
 const fsPromise = fs.promises;
+const sgMail = require('@sendgrid/mail');
+const uuid = require('uuid');
 
 
 const getUsers = async(req, res) => {
@@ -44,10 +46,8 @@ const userRegister = async(req, res) => {
   });
  const avatarURL = `${process.env.SERVER_BASE_URL}/${avatarBaseUrl}`;
 
-
-  const passwordHash = await bcrypt.hash(password, 10);
-  
-
+ const passwordHash = await bcrypt.hash(password, 10);
+ 
   const dbUser = await userModel.create({
     email,
     password: passwordHash,
@@ -65,6 +65,35 @@ catch (err) {console.log(err)};
 };
 
 
+const sendVerificationEmail = (email, verificationToken) => {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+  const message = {
+    to: email,
+    from: process.env.EMAIL,
+    subject: 'Verification',
+    text: `http://localhost:${process.env.PORT}/verify/${verificationToken}`,
+    html: `<p>Press, <a href=http://localhost:${process.env.PORT}/auth/verify/${verificationToken}>click</a> to verify your email</p>`,
+  };
+  const verificateToken = uuid();
+  sgMail.send(message);
+};
+
+const verificateEmail = async (req, res, next) => {
+  try {
+    const user = await model.findOne(req.params);
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    await model.findByIdAndUpdate(user._id, { verificationToken: null });
+
+    res.status(200).send('Welcome!!!');
+  } catch (err) {
+    next(err);
+  }
+};
 
 const userLogin = async(req, res) => {
   try {const {password, email} = req.body;
@@ -184,7 +213,8 @@ module.exports = {
   logOut, 
   getCurrentUser, 
   updateSubscription, 
-  updateAvatar
+  updateAvatar,
+  verificateEmail
   }
 
 

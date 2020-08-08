@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const {userRegister, userLogin, tokenValidate, logOut, getCurrentUser, updateAvatar}  = require("./user.controller");
+const {userRegister, userLogin, tokenValidate, logOut, getCurrentUser, updateAvatar, verificateEmail}  = require("./user.controller");
 const {validateUser} = require("../helpers/validateUser")
 const multer = require('multer');
 const path = require('path');
@@ -14,6 +14,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+authRouter.get('/auth/verify/:verificationToken', validateUser, verificateEmail);
 
 
 authRouter.post("/register", validateUser, userRegister) 

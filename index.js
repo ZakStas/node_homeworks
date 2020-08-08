@@ -10,7 +10,8 @@ const contactsRoutes = require("./contacts/contact.router");
 
 const app = express();
 
-const PORT = 3015;
+const { PORT } = process.env;
+
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
