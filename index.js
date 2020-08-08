@@ -39,8 +39,8 @@ mongoose.connect(process.env.MONGO_URL, {
   if (err) { process.exit(1) }
   console.log("Contacts database connection successful!");
 })
-app.listen(process.env.PORT,() =>{
-  console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(PORT,() =>{
+  console.log(`Server is running on port ${PORT}`);
 });
 
 
