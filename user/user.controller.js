@@ -47,7 +47,7 @@ const userRegister = async(req, res) => {
  const avatarURL = `${process.env.SERVER_BASE_URL}/${avatarBaseUrl}`;
 
  const passwordHash = await bcrypt.hash(password, 10);
-
+ 
   const dbUser = await userModel.create({
     email,
     password: passwordHash,

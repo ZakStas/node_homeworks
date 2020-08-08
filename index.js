@@ -10,7 +10,8 @@ const contactsRoutes = require("./contacts/contact.router");
 
 const app = express();
 
-const PORT = 3016;
+const { PORT } = process.env;
+
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -38,8 +39,8 @@ mongoose.connect(process.env.MONGO_URL, {
   if (err) { process.exit(1) }
   console.log("Contacts database connection successful!");
 })
-app.listen(PORT,() =>{
-  console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT,() =>{
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
 
 
